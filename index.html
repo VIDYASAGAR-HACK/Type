@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberType</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CyberType</h1>
+            <div class="stats">
+                <span>WPM: <span id="wpm">0</span></span>
+                <span>Accuracy: <span id="accuracy">100</span>%</span>
+                <span>Streak: <span id="streak">0</span></span>
+            </div>
+        </div>
+        <div class="difficulty">
+            <button class="btn" data-level="easy">Easy</button>
+            <button class="btn" data-level="medium">Medium</button>
+            <button class="btn" data-level="hard">Hard</button>
+            <button class="btn" data-level="expert">Expert</button>
+        </div>
+        <div class="typing-area">
+            <div id="text-to-type"></div>
+            <input type="text" id="input" autofocus>
+        </div>
+        <div class="footer">
+            <div id="timer">60</div>
+            <button id="reset-btn" class="btn">Reset</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

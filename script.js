@@ -74,49 +74,61 @@ function updateTimer() {
 function endGame() {
     clearInterval(timer);
     input.disabled = true;
-    const wpm = Math.round((correctChars / 5) / (levelConfig[currentLevel].time / 60));
+    const elapsedTime = levelConfig[currentLevel].time - time;
+    const wpm = Math.round((correctChars / 5) / (elapsedTime / 60));
     wpmEl.textContent = wpm > 0 ? wpm : 0;
     accuracyEl.textContent = Math.round((correctChars / totalChars) * 100) || 0;
 }
 
+function updateWordStatus() {
+    const wordSpans = textToType.querySelectorAll('.word');
+    wordSpans.forEach((span, index) => {
+        if (index < currentWordIndex) {
+            span.classList.add('correct');
+            span.classList.remove('active', 'incorrect');
+        } else if (index === currentWordIndex) {
+            span.classList.add('active');
+            span.classList.remove('correct', 'incorrect');
+        } else {
+            span.classList.remove('active', 'correct', 'incorrect');
+        }
+    });
+}
+
 function checkInput() {
+    if (!gameStarted) {
+        startGame();
+    }
+
     const currentWord = words[currentWordIndex];
     const typedValue = input.value;
     const typedValueTrimmed = typedValue.trim();
 
-    if (gameStarted) {
-        totalChars++;
-        if (typedValueTrimmed === currentWord.substring(0, typedValueTrimmed.length)) {
-            correctChars++;
-            input.classList.remove('incorrect');
+    totalChars++;
+    if (currentWord.startsWith(typedValueTrimmed) && typedValue.charAt(typedValue.length - 1) !== ' ') {
+        correctChars++;
+        input.classList.remove('incorrect');
+    } else if (typedValue.charAt(typedValue.length - 1) === ' ') {
+        if (typedValueTrimmed === currentWord) {
+            currentWordIndex++;
+            streak++;
+            input.value = '';
+            updateWordStatus();
         } else {
-            input.classList.add('incorrect');
             streak = 0;
-            streakEl.textContent = streak;
         }
+        streakEl.textContent = streak;
+    } else {
+        input.classList.add('incorrect');
+    }
 
-        let elapsedTime = levelConfig[currentLevel].time - time;
-        if (elapsedTime <= 0) elapsedTime = 1; // Prevent division by zero
-        const wpm = Math.round((correctChars / 5) / (elapsedTime / 60));
-        wpmEl.textContent = wpm > 0 ? wpm : 0;
-        accuracyEl.textContent = Math.round((correctChars / totalChars) * 100);
+    const elapsedTime = levelConfig[currentLevel].time - time;
+    const wpm = Math.round((correctChars / 5) / (elapsedTime / 60));
+    wpmEl.textContent = wpm > 0 ? wpm : 0;
+    accuracyEl.textContent = Math.round((correctChars / totalChars) * 100) || 0;
 
-        if (typedValue.endsWith(' ')) {
-            if (typedValueTrimmed === currentWord) {
-                currentWordIndex++;
-                streak++;
-                streakEl.textContent = streak;
-                input.value = '';
-                if (currentWordIndex >= words.length) {
-                    // All words typed, you can end the game or load new words
-                    endGame();
-                }
-            } else {
-                // Incorrect word typed
-                streak = 0;
-                streakEl.textContent = streak;
-            }
-        }
+    if (currentWordIndex === words.length) {
+        endGame();
     }
 }
 
@@ -128,9 +140,6 @@ difficultyBtns.forEach(btn => {
 });
 
 resetBtn.addEventListener('click', init);
-input.addEventListener('input', () => {
-    startGame();
-    checkInput();
-});
+input.addEventListener('input', checkInput);
 
 init();

@@ -97,11 +97,16 @@ h1 {
     color: #00ff00;
 }
 
+.word {
+    margin-right: 10px;
+    display: inline-block;
+}
+
 .incorrect {
     color: red;
     text-decoration: underline;
+    background-color: rgba(255, 0, 0, 0.2);
 }
-
 
 .word.active {
     color: #fff;
